@@ -10,6 +10,7 @@ edition = "2018"
 directories = "3.0.1"
 clap        = "2.33.3"
 user-error  = "1.2.8"
-ron         = "0.6.4"
+ron         = "0.6.4"       
 serde       = { version = "1.0.124", features = ["derive"] }
 colored     = "2.0.0"
+rustyline   = "7.1.0"
