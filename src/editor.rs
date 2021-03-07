@@ -40,4 +40,18 @@ impl Editor {
             eprintln!("{}: problem saving history: {:?}", "warning".yellow(), err);
         }
     }
+
+    pub fn show_error(err: rustyline::error::ReadlineError) {
+        match err {
+            ReadlineError::Interrupted => {
+                println!("SIGINT received. Exiting.");
+            }
+            ReadlineError::Eof => {
+                println!("EOF received. Exiting.");
+            }
+            err => {
+                eprintln!("Error: {:?}", err);
+            }
+        }
+    }
 }

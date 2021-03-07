@@ -11,7 +11,7 @@ mod editor;
 
 use task::{Task, TaskGroup};
 
-fn main() {
+fn main() -> Result<(), errors::Error> {
     let cfg_path = unwrap_or_return!(config_path::get_config_path());
     let matches = cli::get_matches();
     
@@ -46,6 +46,12 @@ fn main() {
         ],
         }];
     
-    let repl = repl::REPL::new(groups);
+    let mut repl = repl::REPL::new(groups, cfg_path)?;
+    repl.start()?;
     
+    // dbg!(save_file::load_save_file(&cfg_path));
+
+    // let _ = save_file::create_save_file(&groups, &cfg_path);
+
+    Ok(())
 }

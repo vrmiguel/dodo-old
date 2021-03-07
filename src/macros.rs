@@ -7,7 +7,7 @@ macro_rules! unwrap_or_return {
             Ok(ok) => ok,
             Err(err) => {
                 eprintln!("{}: {}", "error:".red(), err);
-                return;
+                return Ok(());
             }
         }
     };

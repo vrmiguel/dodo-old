@@ -1,6 +1,7 @@
 use std::{fmt, io, path::PathBuf};
 
 use ron;
+#[derive(Debug)]
 pub enum Error {
     NoValidHomeDirFound,
     CouldNotCreateFolder(PathBuf),
