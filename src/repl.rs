@@ -1,0 +1,1 @@
+/// A simple wrapper over a Rustyline editor

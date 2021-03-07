@@ -1,0 +1,15 @@
+[package]
+name = "dodo"
+version = "0.1.0"
+authors = ["Vinícius R. Miguel <vinicius.miguel at unifesp.br>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+directories = "3.0.1"
+clap        = "2.33.3"
+user-error  = "1.2.8"
+ron         = "0.6.4"
+serde       = { version = "1.0.124", features = ["derive"] }
+colored     = "2.0.0"
