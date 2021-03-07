@@ -8,6 +8,7 @@ mod save_file;
 mod task;
 mod repl;
 mod editor;
+mod parser;
 
 use task::{Task, TaskGroup};
 
