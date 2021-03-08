@@ -174,8 +174,6 @@ pub fn parse(line: &str) -> Command {
 
 #[cfg(test)]
 mod tests {
-    use crate::errors;
-
     use super::*;
 
     #[test]
