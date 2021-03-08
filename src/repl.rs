@@ -1,3 +1,5 @@
+use colored::Colorize;
+
 use crate::{
     editor::{self, Editor},
     errors, parser,
@@ -23,12 +25,16 @@ impl REPL {
         loop {
             match self.editor.read_line(">> ") {
                 Ok(line) => {
-                    dbg!(parser::parse(line.as_str()));
+                    let command = parser::parse(line.as_str());
+                    self.todo_list.evaluate(command);
                 }
                 Err(err) => {
                     // Prints some additional info depending on which error we're getting
                     Editor::show_error(err);
                     self.editor.save_history(&self.todo_list.config_path);
+                    if let Err(err) = self.todo_list.save_to_file() {
+                        println!("{}: {}", "error".red(), err);
+                    }
                     return Ok(());
                 }
             }

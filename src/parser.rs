@@ -54,7 +54,7 @@ fn parse_task_flip(words: &Vec<&str>) -> Command {
     };
 
     match get_tuple(words[1], task_flip_help) {
-        Some((task_number, group_number)) => Command::FlipTask(task_number, group_number),
+        Some((group_number, task_number)) => Command::FlipTask(group_number, task_number),
         None => Command::NoOp,
     }
 }
@@ -114,6 +114,7 @@ fn parse_removal(words: &Vec<&str>) -> Command {
         );
     }
 
+    // TODO: add usage help
     let print_usage = || {};
 
     let get_group_to_remove = |word: &str| match word.parse::<u16>() {
@@ -171,7 +172,21 @@ pub fn parse(line: &str) -> Command {
 
 #[cfg(test)]
 mod tests {
+    use crate::errors;
+
     use super::*;
+
+    #[test]
+    fn tuple_getting() {
+        let tuple = "2.3";
+        let tuple = get_tuple(tuple, || {}).unwrap();
+
+        assert_eq!(
+            tuple,
+            (2,3)
+        );
+    }
+
     #[test]
     fn task_addition_1() {
         let line = "add 3 \"Mop the floor\"";

@@ -8,7 +8,7 @@ use std::{
 
 use ron;
 
-use crate::command::Command;
+use crate::{command::Command, task};
 use crate::config_path;
 use crate::task::{Task, TaskGroup};
 use crate::{
@@ -88,12 +88,28 @@ impl TodoList {
         }
     }
 
-    fn flip_task(&mut self, task_no: u16, group_no: u16) {
+    fn flip_task(&mut self, group_no: u16, task_no: u16) {
         let (task_no, group_no) = (task_no as usize - 1, group_no as usize - 1);
-        if self.is_a_valid_group(group_no) {
-            self.task_groups[group_no].tasks[task_no].is_done =
-                !self.task_groups[group_no].tasks[task_no].is_done;
-        }
+        dbg!(task_no, group_no);
+        let mut task_group = match self.task_groups.get_mut(group_no) {
+            Some(task_group) => {
+                task_group
+            },
+            None => {
+                println!("Bad argument for `group number`, ignoring command.");
+                return;
+            }
+        };
+
+        let mut task = match  task_group.tasks.get_mut(task_no) {
+            Some(task) => task,
+            None => {
+                println!("Bad argument for `task number`, ignoring command.");
+                return;
+            }
+        };
+
+        task.is_done = !task.is_done;
     }
 
     fn remove_task(&mut self, task_no: u16, group_no: u16) {}
@@ -111,11 +127,11 @@ impl TodoList {
                 name: group_name,
                 tasks: vec![],
             }),
-            Command::FlipTask(task_no, group_no) => {
-                self.flip_task(task_no, group_no);
+            Command::FlipTask(group_no, task_no) => {
+                self.flip_task(group_no, task_no);
             }
-            Command::RemoveTask(task_no, group_no) => {
-                self.remove_task(task_no, group_no);
+            Command::RemoveTask(group_no, task_no) => {
+                self.remove_task(group_no, task_no);
             }
             Command::RemoveGroup(group_no) => {
                 self.remove_group(group_no);
@@ -152,7 +168,7 @@ mod test {
     }
 
     #[test]
-    fn flip_task() -> Result<(), errors::Error> {
+    fn flip_task_1() -> Result<(), errors::Error> {
         let mut todo_list = TodoList::try_from(sample_task_groups())?;
 
         let flip_task = Command::FlipTask(1, 1);
@@ -170,6 +186,51 @@ mod test {
                                 description: "Study for the Physics test".into(),
                                 is_done: false, // Flipped from true to false
                             },
+                        ],
+                    },
+                    TaskGroup {
+                        name: "College".into(),
+                        tasks: vec![
+                            Task {
+                                description: "Study for the Maths test".into(),
+                                is_done: true,
+                            },
+                        ],
+                    },
+                ],
+                config_path,
+            },
+            todo_list
+        );
+
+        Ok(())
+    }
+
+    #[test]
+    fn flip_task_2() -> Result<(), errors::Error> {
+        let mut todo_list = TodoList::try_from(sample_task_groups())?;
+
+        let add_task = Command::AddTask("New task".into(), 1);
+        let flip_task = Command::FlipTask(1, 2);
+        let config_path = config_path::get_config_path()?;
+
+        todo_list.evaluate(add_task);
+        todo_list.evaluate(flip_task);
+
+        assert_eq!(
+            TodoList {
+                task_groups: vec![
+                    TaskGroup {
+                        name: "Group 1".into(),
+                        tasks: vec![
+                            Task {
+                                description: "Study for the Physics test".into(),
+                                is_done: true,
+                            },
+                            Task {
+                                description: "New task".into(),
+                                is_done: false,
+                            }
                         ],
                     },
                     TaskGroup {
