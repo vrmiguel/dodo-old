@@ -73,18 +73,14 @@ impl TodoList {
         Ok(())
     }
 
-    fn is_a_valid_group(&mut self, group_no: usize) -> bool {
-        group_no < self.task_groups.len()
-    }
-
     fn add_task(&mut self, description: String, group_no: u16) {
         let group_no = group_no as usize - 1;
-        if self.is_a_valid_group(group_no) {
+        if let Some(group) = self.get_group_mut(group_no) {
             let new_task = Task {
                 description,
                 is_done: false,
             };
-            self.task_groups[group_no].tasks.push(new_task);
+            group.tasks.push(new_task)
         }
     }
 
@@ -102,17 +98,7 @@ impl TodoList {
 
     fn get_task_mut(&mut self, group_no: u16, task_no: u16) -> Option<&mut Task> {
         let (task_no, group_no) = (task_no as usize - 1, group_no as usize - 1);
-        // let mut task_group = match self.task_groups.get_mut(group_no) {
-        //     Some(task_group) => {
-        //         task_group
-        //     },
-        //     None => {
-        //         println!("Bad argument for `group number`, ignoring command.");
-        //         return None;
-        //     }
-        // };
-
-        let mut task_group = match self.get_group_mut(group_no) {
+        let task_group = match self.get_group_mut(group_no) {
             Some(task_group_mut) => task_group_mut,
             None => return None,
         };
@@ -132,9 +118,13 @@ impl TodoList {
         }
     }
 
-    fn remove_task(&mut self, task_no: u16, group_no: u16) {
-
-
+    fn remove_task(&mut self, group_no: u16, task_no: u16) {
+        let (task_no, group_no) = (task_no as usize - 1, group_no as usize - 1);
+        if let Some(group) = self.get_group_mut(group_no) {
+            if task_no < group.tasks.len() {
+                group.tasks.remove(task_no);
+            }
+        }
     }
 
     fn remove_group(&mut self, group_no: u16) {}
