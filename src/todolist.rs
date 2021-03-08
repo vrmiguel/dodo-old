@@ -7,6 +7,7 @@ use std::{
 };
 
 use ron;
+use colored::Colorize;
 
 use crate::{command::Command, task};
 use crate::config_path;
@@ -127,7 +128,14 @@ impl TodoList {
         }
     }
 
-    fn remove_group(&mut self, group_no: u16) {}
+    fn remove_group(&mut self, group_no: u16) {
+        let group_no = group_no as usize - 1;
+        if group_no < self.task_groups.len() {
+            self.task_groups.remove(group_no);
+        } else {
+            println!("{}: group no. {} not found.", "error".red(), group_no+1);
+        }
+    }
 
     pub fn evaluate(&mut self, command: Command) {
         use Command::*;
