@@ -1,9 +1,9 @@
-use std::path::PathBuf;
+use std::{convert::TryFrom, path::PathBuf};
 
 use crate::{
     editor::{self, Editor}, 
     errors, 
-    save_file, 
+    todolist::TodoList, 
     task::{Task, TaskGroup},
     parser
 };
@@ -11,26 +11,19 @@ use crate::{
 
 /// dodo's Read-Eval-Print Loop
 pub struct REPL {
-    task_groups: Vec<TaskGroup>,
-    config_path: PathBuf,
+    todo_list: TodoList,
     editor: Editor
 }
 
 impl REPL {
-    pub fn new(task_groups: Vec<TaskGroup>, config_path: PathBuf) -> Result<Self, errors::Error> {
-
-        let task_groups = save_file::load_save_file(&config_path)?;
-
+    pub fn new(todo_list: TodoList) -> Result<Self, errors::Error> {
         Ok(Self {
-            editor: Editor::new(&config_path),
-            task_groups,
-            config_path,
+            editor: Editor::new(&todo_list.config_path),
+            todo_list,
         })
     }
 
     pub fn parse(&mut self, line: &str) {
-        
-        // m
     }
 
     /// Starts the loop until an exit signal is given
@@ -41,10 +34,9 @@ impl REPL {
                     dbg!(parser::parse(line.as_str()));
                 },
                 Err(err) => {
-                    // dbg!(self.parse(line));
                     // Prints some additional info depending on which error we're getting
                     Editor::show_error(err);
-                    self.editor.save_history(&self.config_path);
+                    self.editor.save_history(&self.todo_list.config_path);
                     return Ok(());
                 }
             }

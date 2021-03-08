@@ -5,13 +5,15 @@ use std::path::{Path, PathBuf};
 use rustyline::{self, error::ReadlineError};
 use colored::Colorize;
 
+static HISTORY_FILE_NAME: &'static str = "ron_history";
+
 pub struct Editor {
     inner: rustyline::Editor<()>,
 }
 
 impl Editor {
     /// Returns a new rustyline::Editor with history loaded in (if it exists)
-    pub fn new() -> Self {
+    pub fn new(config_path: &PathBuf) -> Self {
         let mut inner = rustyline::Editor::<()>::new();
         // let hinter = EditorHinter {
         //     hints: match mode {
@@ -20,7 +22,7 @@ impl Editor {
         //     }
         // };
         // editor.set_helper(Some(hinter));
-        if inner.load_history("history.txt").is_err() {}
+        if inner.load_history(&config_path.join(HISTORY_FILE_NAME)).is_err() {}
 
         Self { inner }
     }
@@ -36,7 +38,7 @@ impl Editor {
     }
 
     pub fn save_history(&mut self, path: &PathBuf) {
-        if let Err(err) = self.inner.save_history(&path.join("history.txt")) {
+        if let Err(err) = self.inner.save_history(&path.join(HISTORY_FILE_NAME)) {
             eprintln!("{}: problem saving history: {:?}", "warning".yellow(), err);
         }
     }

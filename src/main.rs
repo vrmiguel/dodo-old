@@ -1,10 +1,12 @@
+use std::convert::TryFrom;
+
 use colored::Colorize;
 
 mod cli;
 mod config_path;
 mod errors;
 mod macros;
-mod save_file;
+mod todolist;
 mod task;
 mod repl;
 mod editor;
@@ -15,6 +17,7 @@ use task::{Task, TaskGroup};
 fn main() -> Result<(), errors::Error> {
     let cfg_path = unwrap_or_return!(config_path::get_config_path());
     let matches = cli::get_matches();
+    let list = todolist::TodoList::try_from(cfg_path)?;
     
     let groups = vec![TaskGroup {
         name: "Uni".into(),
@@ -47,7 +50,7 @@ fn main() -> Result<(), errors::Error> {
         ],
         }];
     
-    let mut repl = repl::REPL::new(groups, cfg_path)?;
+    let mut repl = repl::REPL::new(list)?;
     repl.start()?;
     
     // dbg!(save_file::load_save_file(&cfg_path));
