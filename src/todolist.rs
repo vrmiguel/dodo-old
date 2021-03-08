@@ -191,6 +191,49 @@ mod test {
     }
 
     #[test]
+    fn add_group() -> Result<(), errors::Error> {
+
+        let mut todo_list = TodoList::try_from(sample_task_groups())?;
+        let add_group_cmd = Command::AddGroup("New group".into());
+        todo_list.evaluate(add_group_cmd);
+
+        let config_path = config_path::get_config_path()?;
+
+        assert_eq!(
+            TodoList {
+                task_groups: vec![
+                    TaskGroup {
+                        name: "Group 1".into(),
+                        tasks: vec![
+                            Task {
+                                description: "Study for the Physics test".into(),
+                                is_done: true,
+                            }
+                        ],
+                    },
+                    TaskGroup {
+                        name: "College".into(),
+                        tasks: vec![
+                            Task {
+                                description: "Study for the Maths test".into(),
+                                is_done: true,
+                            },
+                        ],
+                    },
+                    TaskGroup {
+                        name: "New group".into(),
+                        tasks: vec![],
+                    }
+                ],
+                config_path
+            },
+            todo_list
+        );
+
+        Ok(())
+    }
+
+    #[test]
     fn add_task() -> Result<(), errors::Error> {
         let mut todo_list = TodoList::try_from(sample_task_groups())?;
 
