@@ -15,5 +15,8 @@ pub enum Command {
     /// Removes a group
     /// Argument is the number of the group to be removed
     RemoveGroup(u16),
+    /// Shows the entire todo list
+    ShowList,
+    /// Indicates that no operation should be used
     NoOp,
 }

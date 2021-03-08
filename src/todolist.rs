@@ -136,6 +136,9 @@ impl TodoList {
             Command::RemoveGroup(group_no) => {
                 self.remove_group(group_no);
             }
+            Command::ShowList => {
+                print!("{}", self);
+            }
         }
     }
 }
@@ -229,7 +232,7 @@ mod test {
                             },
                             Task {
                                 description: "New task".into(),
-                                is_done: false,
+                                is_done: true,
                             }
                         ],
                     },

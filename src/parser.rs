@@ -159,6 +159,8 @@ pub fn parse(line: &str) -> Command {
         word if word.starts_with("remove") => parse_removal(&words),
         word if word.starts_with("group") => parse_group_addition(&words),
         word if word.starts_with("done") => parse_task_flip(&words),
+        // TODO: add subcommands to `show`
+        word if word.starts_with("show") => Command::ShowList,
         word => {
             println!(
                 "{}: \"{}\" is not a recognized command. \nType in `help` to get additional help.",
