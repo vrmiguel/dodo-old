@@ -4,6 +4,7 @@ use ron;
 #[derive(Debug)]
 pub enum Error {
     NoValidHomeDirFound,
+    ParseIntError,
     CouldNotCreateFolder(PathBuf),
     FileSystemError(io::Error),
     RonError(ron::error::ErrorCode),
@@ -28,6 +29,9 @@ impl fmt::Display for Error {
             }
             Error::IoError(io_error) => {
                 write!(f, "There's been an IO problem: {}", io_error)
+            }
+            Error::ParseIntError => {
+                write!(f, "Could not parse integer")
             }
         }
     }

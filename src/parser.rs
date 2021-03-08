@@ -1,8 +1,6 @@
 use colored::Colorize;
 
-/// Simplistic 'parser' for REPL arguments
-
-
+use crate::errors::Error;
 #[derive(Debug, PartialEq, Eq)]
 pub enum Command {
     /// Flip a task from not done to done or vice-versa
@@ -22,10 +20,60 @@ pub enum Command {
     NoOp
 }
 
+
+/// Simplistic 'parser' for REPL arguments
+
+
 fn print_help() -> Command {
     println!("add help here");
 
     Command::NoOp
+}
+
+/// Given a string in the form "x.y", returns Some(x, y) or None
+fn get_tuple<H>(word: &str, help_fn: H) -> Option<(u16, u16)> where 
+    H: Fn() -> () {
+    let parts  = word
+        .split(".")
+        .filter(|x| !x.is_empty())
+        .map(|word| word.parse::<u16>());
+
+
+    let show_help_and_exit = || {
+        help_fn();
+        None
+    };
+
+    if parts.clone().any(|x| x.is_err()) {
+        return show_help_and_exit();
+    }
+
+    let parts: Vec<u16> = parts.map(|x| x.unwrap()).collect();
+
+    if parts.len() != 2 {
+        return show_help_and_exit();
+    }
+
+    Some((parts[0], parts[1]))
+}
+
+
+fn parse_task_flip(words: &Vec<&str>) -> Command {
+    // done 2.3
+    if words.len() != 2 {
+        println!("{}: wrong arguments to `{}`", "error".red(), "done".green());
+        println!("Example usage: 'done 2.3', in order to mark the second task of the third group as done");
+    }
+
+    let task_flip_help = || {
+        println!("{}: wrong format for argument to `{}`", "error".red(), "done".green());
+        println!("Argument should follow the format `T.G`, where T represents the task number and G the group number.");
+    };
+
+    match get_tuple(words[1], task_flip_help) {
+        Some((task_number, group_number)) => Command::FlipTask(task_number, group_number),
+        None => Command::NoOp,
+    }
 }
 
 fn parse_task_addition(words: &Vec<&str>) -> Command {
@@ -64,39 +112,44 @@ fn parse_group_addition(words: &Vec<&str>) -> Command {
 }
 
 
-fn print_task_flip_help() -> Command {
-    println!("{}: wrong format for argument to `{}`", "error".red(), "done".green());
-    println!("Argument should follow the format `T.G`, where T represents the task number and G the group number.");
-    Command::NoOp
-}
-
-fn parse_task_flip(words: &Vec<&str>) -> Command {
-    // done 2.3
-    if words.len() != 2 {
-        println!("{}: wrong arguments to `{}`", "error".red(), "done".green());
-        println!("Example usage: 'done 2.3', in order to mark the second task of the third group as done");
+fn parse_removal(words: &Vec<&str>) -> Command {
+    // Examples:
+    //     remove task 3.2
+    //     remove group 2
+    if words.len() != 3 {
+        println!("{}: wrong arguments to `{}`", "error".red(), "remove".green());
     }
 
-    // let test = "23"
-    // let ok = test.parse::<u16>();
+    let print_usage = || {};
 
-    // Vec<Result<u16, std::num::ParseIntError>>
-    let parts  = words[1]
-        .split(".")
-        .filter(|x| !x.is_empty())
-        .map(|word| word.parse::<u16>());
-        
-    if parts.clone().any(|x| x.is_err()) {
-        return print_task_flip_help();
+    let get_group_to_remove = |word: &str| {
+        match word.parse::<u16>() {
+            Ok(num) => Some(num),
+            Err(_) => {
+                print_usage();
+                None
+            }
+        }
+    };
+
+    match words[1] {
+        "group" => {
+            match get_group_to_remove(words[2]) {
+                Some(group_no) => Command::RemoveGroup(group_no),
+                None => Command::NoOp
+            }
+        },
+        "task" => {
+            match get_tuple(words[2], print_usage) {
+                Some((task_no, group_no)) => Command::RemoveTask(task_no, group_no),
+                None => Command::NoOp
+            }
+        },
+        other => {
+            println!("{}: expected {} or {}, found {}", "error".red(), "task".green(), "group".green(), other.red());
+            Command::NoOp       
+        }
     }
-
-    let parts: Vec<u16> = parts.map(|x| x.unwrap()).collect();
-
-    if parts.len() != 2 {
-        return print_task_flip_help();
-    }
-
-    Command::FlipTask(parts[0], parts[1])
 }
 
 pub fn parse(line: &str) -> Command {
@@ -112,9 +165,9 @@ pub fn parse(line: &str) -> Command {
         word if word.starts_with("add") => {
             parse_task_addition(&words)
         },
-        // word if word.starts_with("remove") => {
-
-        // },
+        word if word.starts_with("remove") => {
+            parse_removal(&words)
+        },
         word if word.starts_with("group") => {
             parse_group_addition(&words)
         },
@@ -190,5 +243,21 @@ mod tests {
                 3,
             )
         )
+    }
+
+    #[test]
+    fn task_removal() {
+        assert_eq!(
+            parse("remove task 2.3"),
+            Command::RemoveTask(2, 3)
+        );
+    }
+
+    #[test]
+    fn group_removal() {
+        assert_eq!(
+            parse("remove group 2"),
+            Command::RemoveGroup(2)
+        );
     }
 }
