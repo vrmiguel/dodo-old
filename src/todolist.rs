@@ -1,4 +1,9 @@
-use std::{convert::TryFrom, fs::{self, File}, io::{BufWriter, Write}, path::PathBuf};
+use std::{
+    convert::TryFrom, 
+    fmt,
+    fs::{self, File}, 
+    io::{BufWriter, Write}, 
+    path::PathBuf};
 
 use ron;
 
@@ -9,6 +14,22 @@ use crate::config_path;
 pub struct TodoList {
     pub task_groups: Vec<TaskGroup>,
     pub config_path: PathBuf
+}
+
+impl fmt::Display for TodoList {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+
+        for (i, group) in self.task_groups.iter().enumerate() {
+            writeln!(
+                f,
+                "{}. {}",
+                i + 1,
+                group
+            )?;
+        }
+
+        write!(f, "")
+    }
 }
 
 impl TryFrom<PathBuf> for TodoList {

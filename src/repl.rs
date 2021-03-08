@@ -1,10 +1,7 @@
-use std::{convert::TryFrom, path::PathBuf};
-
 use crate::{
     editor::{self, Editor}, 
     errors, 
     todolist::TodoList, 
-    task::{Task, TaskGroup},
     parser
 };
 
@@ -21,9 +18,6 @@ impl REPL {
             editor: Editor::new(&todo_list.config_path),
             todo_list,
         })
-    }
-
-    pub fn parse(&mut self, line: &str) {
     }
 
     /// Starts the loop until an exit signal is given

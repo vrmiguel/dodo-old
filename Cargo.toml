@@ -14,3 +14,9 @@ ron         = "0.6.4"
 serde       = { version = "1.0.124", features = ["derive"] }
 colored     = "2.0.0"
 rustyline   = "7.1.0"
+
+
+[profile.release]
+lto = true
+codegen-units = 1
+opt-level = 3

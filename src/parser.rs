@@ -1,31 +1,11 @@
-use colored::Colorize;
-
-use crate::errors::Error;
-#[derive(Debug, PartialEq, Eq)]
-pub enum Command {
-    /// Flip a task from not done to done or vice-versa
-    FlipTask(u16, u16),
-    /// Adds a new task to a group;
-    /// Arguments are (task description, group number)
-    AddTask(String, u16),
-    /// Adds a new group to the group list
-    /// Argument is the new group's name
-    AddGroup(String),
-    /// Removes a task from a group.
-    /// Arguments are (number of the task, number of the group)
-    RemoveTask(u16, u16),
-    /// Removes a group 
-    /// Argument is the number of the group to be removed
-    RemoveGroup(u16),
-    NoOp
-}
-
-
 /// Simplistic 'parser' for REPL arguments
 
+use colored::Colorize;
+
+use crate::command::Command;
 
 fn print_help() -> Command {
-    println!("add help here");
+    println!("TODO: add help");
 
     Command::NoOp
 }
@@ -59,7 +39,7 @@ fn get_tuple<H>(word: &str, help_fn: H) -> Option<(u16, u16)> where
 
 
 fn parse_task_flip(words: &Vec<&str>) -> Command {
-    // done 2.3
+    // Example: done 2.3
     if words.len() != 2 {
         println!("{}: wrong arguments to `{}`", "error".red(), "done".green());
         println!("Example usage: 'done 2.3', in order to mark the second task of the third group as done");
@@ -77,7 +57,7 @@ fn parse_task_flip(words: &Vec<&str>) -> Command {
 }
 
 fn parse_task_addition(words: &Vec<&str>) -> Command {
-    // add 2 "hahaha"
+    // Example: add 2 "hahaha"
     if words.len() < 3 {
         println!("{}: missing arguments to `{}`", "error".red(), "add".green());
         println!("Example usage: add 2 \"Mop the floors\", in order to add \"Mop the floors\" to the group number 2.");
@@ -175,6 +155,7 @@ pub fn parse(line: &str) -> Command {
             parse_task_flip(&words)
         }
         word => {
+            println!("{}: \"{}\" is not a recognized command. \nType in `help` to get additional help.", "error".red(), word);
             Command::NoOp
         }
     }
