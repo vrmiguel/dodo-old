@@ -1,7 +1,7 @@
-use std::{path::PathBuf, fs};
-use directories::ProjectDirs;
-use colored::Colorize;
 use crate::errors::{self, Error};
+use colored::Colorize;
+use directories::ProjectDirs;
+use std::{fs, path::PathBuf};
 
 /// get_config_path gets the platform-specific configuration folder path, creating it if it doesn't already exist.
 pub fn get_config_path() -> Result<PathBuf, errors::Error> {
@@ -15,12 +15,12 @@ pub fn get_config_path() -> Result<PathBuf, errors::Error> {
     let config_dir = proj_dirs.config_dir();
 
     if !config_dir.exists() {
-        let folder_creation= fs::create_dir_all(config_dir);
+        let folder_creation = fs::create_dir_all(config_dir);
         if folder_creation.is_err() {
             return Err(Error::CouldNotCreateFolder(PathBuf::from(config_dir)));
         }
         println!("{}: created folder {:?}", "info".yellow(), config_dir);
     }
-    
+
     Ok(PathBuf::from(config_dir))
 }

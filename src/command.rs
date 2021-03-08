@@ -11,8 +11,8 @@ pub enum Command {
     /// Removes a task from a group.
     /// Arguments are (number of the task, number of the group)
     RemoveTask(u16, u16),
-    /// Removes a group 
+    /// Removes a group
     /// Argument is the number of the group to be removed
     RemoveGroup(u16),
-    NoOp
+    NoOp,
 }

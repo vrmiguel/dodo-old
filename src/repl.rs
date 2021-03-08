@@ -1,15 +1,13 @@
 use crate::{
-    editor::{self, Editor}, 
-    errors, 
-    todolist::TodoList, 
-    parser
+    editor::{self, Editor},
+    errors, parser,
+    todolist::TodoList,
 };
-
 
 /// dodo's Read-Eval-Print Loop
 pub struct REPL {
     todo_list: TodoList,
-    editor: Editor
+    editor: Editor,
 }
 
 impl REPL {
@@ -26,7 +24,7 @@ impl REPL {
             match self.editor.read_line(">> ") {
                 Ok(line) => {
                     dbg!(parser::parse(line.as_str()));
-                },
+                }
                 Err(err) => {
                     // Prints some additional info depending on which error we're getting
                     Editor::show_error(err);

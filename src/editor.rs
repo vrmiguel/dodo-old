@@ -1,9 +1,8 @@
 use std::path::PathBuf;
 
-/// A simple wrapper over a Rustyline editor
-
-use rustyline::{self, error::ReadlineError};
 use colored::Colorize;
+/// A simple wrapper over a Rustyline editor
+use rustyline::{self, error::ReadlineError};
 
 static HISTORY_FILE_NAME: &'static str = "ron_history";
 
@@ -22,7 +21,10 @@ impl Editor {
         //     }
         // };
         // editor.set_helper(Some(hinter));
-        if inner.load_history(&config_path.join(HISTORY_FILE_NAME)).is_err() {}
+        if inner
+            .load_history(&config_path.join(HISTORY_FILE_NAME))
+            .is_err()
+        {}
 
         Self { inner }
     }
