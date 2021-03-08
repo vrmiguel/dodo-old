@@ -88,16 +88,33 @@ impl TodoList {
         }
     }
 
-    fn get_task_mut(&mut self, group_no: u16, task_no: u16) -> Option<&mut Task> {
-        let (task_no, group_no) = (task_no as usize - 1, group_no as usize - 1);
-        let mut task_group = match self.task_groups.get_mut(group_no) {
+    fn get_group_mut(&mut self, group_no: usize) -> Option<&mut TaskGroup> {
+        match self.task_groups.get_mut(group_no as usize) {
             Some(task_group) => {
-                task_group
+                Some(task_group)
             },
             None => {
                 println!("Bad argument for `group number`, ignoring command.");
-                return None;
+                None
             }
+        }
+    }
+
+    fn get_task_mut(&mut self, group_no: u16, task_no: u16) -> Option<&mut Task> {
+        let (task_no, group_no) = (task_no as usize - 1, group_no as usize - 1);
+        // let mut task_group = match self.task_groups.get_mut(group_no) {
+        //     Some(task_group) => {
+        //         task_group
+        //     },
+        //     None => {
+        //         println!("Bad argument for `group number`, ignoring command.");
+        //         return None;
+        //     }
+        // };
+
+        let mut task_group = match self.get_group_mut(group_no) {
+            Some(task_group_mut) => task_group_mut,
+            None => return None,
         };
 
         match  task_group.tasks.get_mut(task_no) {
@@ -110,31 +127,15 @@ impl TodoList {
     }
 
     fn flip_task(&mut self, group_no: u16, task_no: u16) {
-        // let (task_no, group_no) = (task_no as usize - 1, group_no as usize - 1);
-        // let mut task_group = match self.task_groups.get_mut(group_no) {
-        //     Some(task_group) => {
-        //         task_group
-        //     },
-        //     None => {
-        //         println!("Bad argument for `group number`, ignoring command.");
-        //         return;
-        //     }
-        // };
-
-        // let mut task = match  task_group.tasks.get_mut(task_no) {
-        //     Some(task) => task,
-        //     None => {
-        //         println!("Bad argument for `task number`, ignoring command.");
-        //         return;
-        //     }
-        // };
-
         if let Some(task) = self.get_task_mut(group_no, task_no) {
             task.is_done = !task.is_done;
         }
     }
 
-    fn remove_task(&mut self, task_no: u16, group_no: u16) {}
+    fn remove_task(&mut self, task_no: u16, group_no: u16) {
+
+
+    }
 
     fn remove_group(&mut self, group_no: u16) {}
 
