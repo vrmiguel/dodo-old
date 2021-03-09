@@ -1,15 +1,18 @@
-use std::{convert::TryFrom, fmt, fs::{self, File}, io::{BufWriter, Write}, path::PathBuf};
-
-use ron;
-use colored::Colorize;
-
-use crate::{command::Command, task};
-use crate::config_path;
-use crate::task::{Task, TaskGroup};
-use crate::{
-    command,
-    errors::{self, Error},
+use std::{
+    convert::TryFrom,
+    fmt,
+    fs::{self, File},
+    io::{BufWriter, Write},
+    path::PathBuf,
 };
+
+use colored::Colorize;
+use ron;
+
+use crate::command::Command;
+use crate::config_path;
+use crate::errors::{self, Error};
+use crate::task::{Task, TaskGroup};
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct TodoList {
@@ -32,23 +35,18 @@ impl TryFrom<PathBuf> for TodoList {
 
     fn try_from(config_path: PathBuf) -> Result<Self, Self::Error> {
         let save_file_path = config_path.join("dodo.ron");
-        // let save_file = ?;
-        // let task_groups: Vec<TaskGroup> = ;
-
-        // let task_groups:  = match  {
-        //     Ok(file_contents) => ron::de::from_str(&file_contents)?,
-        //     Err(err) => {
-                
-        //     }
-        // };
 
         let task_groups: Vec<TaskGroup> = match save_file_path.exists() {
             true => {
                 let file_contents = fs::read_to_string(save_file_path)?;
                 ron::de::from_str(&file_contents)?
-            },
+            }
             false => {
-                println!("{}: could not find a `dodo.ron` in `{:#?}`. \nCreating a new save file.", "warning".yellow(), save_file_path);
+                println!(
+                    "{}: could not find a `dodo.ron` in `{:#?}`. \nCreating a new save file.",
+                    "warning".yellow(),
+                    save_file_path
+                );
                 vec![]
             }
         };
@@ -99,9 +97,7 @@ impl TodoList {
 
     fn get_group_mut(&mut self, group_no: usize) -> Option<&mut TaskGroup> {
         match self.task_groups.get_mut(group_no as usize) {
-            Some(task_group) => {
-                Some(task_group)
-            },
+            Some(task_group) => Some(task_group),
             None => {
                 println!("Bad argument for `group number`, ignoring command.");
                 None
@@ -116,7 +112,7 @@ impl TodoList {
             None => return None,
         };
 
-        match  task_group.tasks.get_mut(task_no) {
+        match task_group.tasks.get_mut(task_no) {
             Some(task) => Some(task),
             None => {
                 println!("Bad argument for `task number`, ignoring command.");
@@ -145,7 +141,7 @@ impl TodoList {
         if group_no < self.task_groups.len() {
             self.task_groups.remove(group_no);
         } else {
-            println!("{}: group no. {} not found.", "error".red(), group_no+1);
+            println!("{}: group no. {} not found.", "error".red(), group_no + 1);
         }
     }
 
@@ -184,21 +180,17 @@ mod test {
         vec![
             TaskGroup {
                 name: "Group 1".into(),
-                tasks: vec![
-                    Task {
-                        description: "Study for the Physics test".into(),
-                        is_done: true,
-                    },
-                ],
+                tasks: vec![Task {
+                    description: "Study for the Physics test".into(),
+                    is_done: true,
+                }],
             },
             TaskGroup {
                 name: "College".into(),
-                tasks: vec![
-                    Task {
-                        description: "Study for the Maths test".into(),
-                        is_done: true,
-                    },
-                ],
+                tasks: vec![Task {
+                    description: "Study for the Maths test".into(),
+                    is_done: true,
+                }],
             },
         ]
     }
@@ -217,21 +209,17 @@ mod test {
                 task_groups: vec![
                     TaskGroup {
                         name: "Group 1".into(),
-                        tasks: vec![
-                            Task {
-                                description: "Study for the Physics test".into(),
-                                is_done: false, // Flipped from true to false
-                            },
-                        ],
+                        tasks: vec![Task {
+                            description: "Study for the Physics test".into(),
+                            is_done: false, // Flipped from true to false
+                        },],
                     },
                     TaskGroup {
                         name: "College".into(),
-                        tasks: vec![
-                            Task {
-                                description: "Study for the Maths test".into(),
-                                is_done: true,
-                            },
-                        ],
+                        tasks: vec![Task {
+                            description: "Study for the Maths test".into(),
+                            is_done: true,
+                        },],
                     },
                 ],
                 config_path,
@@ -271,12 +259,10 @@ mod test {
                     },
                     TaskGroup {
                         name: "College".into(),
-                        tasks: vec![
-                            Task {
-                                description: "Study for the Maths test".into(),
-                                is_done: true,
-                            },
-                        ],
+                        tasks: vec![Task {
+                            description: "Study for the Maths test".into(),
+                            is_done: true,
+                        },],
                     },
                 ],
                 config_path,
@@ -289,7 +275,6 @@ mod test {
 
     #[test]
     fn add_group() -> Result<(), errors::Error> {
-
         let mut todo_list = TodoList::try_from(sample_task_groups())?;
         let add_group_cmd = Command::AddGroup("New group".into());
         todo_list.evaluate(add_group_cmd);
@@ -301,21 +286,17 @@ mod test {
                 task_groups: vec![
                     TaskGroup {
                         name: "Group 1".into(),
-                        tasks: vec![
-                            Task {
-                                description: "Study for the Physics test".into(),
-                                is_done: true,
-                            }
-                        ],
+                        tasks: vec![Task {
+                            description: "Study for the Physics test".into(),
+                            is_done: true,
+                        }],
                     },
                     TaskGroup {
                         name: "College".into(),
-                        tasks: vec![
-                            Task {
-                                description: "Study for the Maths test".into(),
-                                is_done: true,
-                            },
-                        ],
+                        tasks: vec![Task {
+                            description: "Study for the Maths test".into(),
+                            is_done: true,
+                        },],
                     },
                     TaskGroup {
                         name: "New group".into(),
@@ -357,12 +338,10 @@ mod test {
                     },
                     TaskGroup {
                         name: "College".into(),
-                        tasks: vec![
-                            Task {
-                                description: "Study for the Maths test".into(),
-                                is_done: true,
-                            },
-                        ],
+                        tasks: vec![Task {
+                            description: "Study for the Maths test".into(),
+                            is_done: true,
+                        },],
                     },
                 ],
                 config_path

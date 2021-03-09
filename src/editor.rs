@@ -2,13 +2,12 @@ use std::{collections::HashSet, path::PathBuf};
 
 use colored::Colorize;
 
-use rustyline::{self, error::ReadlineError};
 use rustyline::hint::{Hint, Hinter};
 use rustyline::Context;
+use rustyline::{self, error::ReadlineError};
 use rustyline_derive::{Completer, Helper, Highlighter, Validator};
 
 static HISTORY_FILE_NAME: &'static str = "ron_history";
-
 
 impl Hint for CommandHint {
     fn display(&self) -> &str {
@@ -26,10 +25,10 @@ impl Hint for CommandHint {
 
 fn editor_hints() -> HashSet<CommandHint> {
     let mut set = HashSet::new();
-    set.insert(CommandHint::new("add",     "a"));
-    set.insert(CommandHint::new("group",    "g"));
+    set.insert(CommandHint::new("add", "a"));
+    set.insert(CommandHint::new("group", "g"));
     // set.insert(CommandHint::new("remove task",  "remove t"));
-    set.insert(CommandHint::new("remove",  "r"));
+    set.insert(CommandHint::new("remove", "r"));
     set.insert(CommandHint::new("help", "h"));
     set
 }
@@ -66,7 +65,6 @@ struct EditorHinter {
     hints: HashSet<CommandHint>,
 }
 
-
 impl CommandHint {
     fn new(text: &str, complete_up_to: &str) -> CommandHint {
         assert!(text.starts_with(complete_up_to));
@@ -94,7 +92,7 @@ impl Editor {
     pub fn new(config_path: &PathBuf) -> Self {
         let mut inner = rustyline::Editor::<EditorHinter>::new();
         let hinter = EditorHinter {
-            hints: editor_hints()
+            hints: editor_hints(),
         };
         inner.set_helper(Some(hinter));
         if inner

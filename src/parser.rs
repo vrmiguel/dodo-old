@@ -155,7 +155,7 @@ pub fn parse(line: &str) -> Command {
     let first_word = words[0];
     match first_word {
         word if word.starts_with("help") => print_help(),
-        word if word.starts_with("add") => parse_task_addition(&words),
+        word if word.starts_with("task") => parse_task_addition(&words),
         word if word.starts_with("remove") => parse_removal(&words),
         word if word.starts_with("group") => parse_group_addition(&words),
         word if word.starts_with("done") => parse_task_flip(&words),
@@ -181,15 +181,12 @@ mod tests {
         let tuple = "2.3";
         let tuple = get_tuple(tuple, || {}).unwrap();
 
-        assert_eq!(
-            tuple,
-            (2,3)
-        );
+        assert_eq!(tuple, (2, 3));
     }
 
     #[test]
     fn task_addition_1() {
-        let line = "add 3 \"Mop the floor\"";
+        let line = "task 3 \"Mop the floor\"";
 
         assert_eq!(
             Command::AddTask("\"Mop the floor\"".into(), 3,),
@@ -199,14 +196,14 @@ mod tests {
 
     #[test]
     fn task_addition_2() {
-        let line = "add 1 \"Read a book\"";
+        let line = "task 1 \"Read a book\"";
 
         assert_eq!(Command::AddTask("\"Read a book\"".into(), 1,), parse(line));
     }
 
     #[test]
     fn task_addition_3() {
-        let line = "add -1 \"Read a book\"";
+        let line = "task -1 \"Read a book\"";
 
         assert_eq!(
             // Should fail upon group number parsing and return NoOp
