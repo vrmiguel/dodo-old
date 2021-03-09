@@ -19,22 +19,24 @@ mod todolist;
 fn main() -> Result<(), errors::Error> {
     
     let cfg_path = unwrap_or_return!(config_path::get_config_path());
-    let list = todolist::TodoList::try_from(cfg_path.clone())?;
+    let mut list = todolist::TodoList::try_from(cfg_path)?;
     if env::args().len() == 1 {
         print!("{}", list);
         return Ok(());
     }
-    
+    let matches = cli::get_matches();
+    let args = cli::CommandLineArguments::try_from(matches)?;
 
-    // let cfg_path = unwrap_or_return!(config_path::get_config_path());
-    // let _matches = cli::get_matches();
+    for command in args.commands {
+        list.evaluate(command);
+    }
 
-    // let mut repl = repl::REPL::new(list)?;
-    // repl.start()?;
-
-    // let todo_list = todolist::TodoList::try_from(cfg_path)?;
-
-    // println!("{}", todo_list);
+    if args.should_start_repl {
+        let mut repl = repl::REPL::new(list)?;
+        repl.start_loop()?;
+    } else {
+        println!("{}", list);
+    }
 
     Ok(())
 }

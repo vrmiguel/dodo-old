@@ -21,7 +21,7 @@ impl REPL {
     }
 
     /// Starts the loop until an exit signal is given
-    pub fn start(&mut self) -> Result<(), errors::Error> {
+    pub fn start_loop(&mut self) -> Result<(), errors::Error> {
         loop {
             match self.editor.read_line(">> ") {
                 Ok(line) => {

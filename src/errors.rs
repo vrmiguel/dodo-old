@@ -1,6 +1,7 @@
 use std::{fmt, io, path::PathBuf};
 
 use ron;
+use clap;
 #[allow(dead_code)]
 #[derive(Debug)]
 pub enum Error {
@@ -10,6 +11,7 @@ pub enum Error {
     FileSystemError(io::Error),
     RonError(ron::error::ErrorCode),
     IoError(std::io::Error),
+    ClapError(clap::Error)
 }
 
 impl fmt::Display for Error {
@@ -21,6 +23,9 @@ impl fmt::Display for Error {
             ),
             Error::CouldNotCreateFolder(path_buf) => {
                 write!(f, "Could not create path {:#?}", path_buf)
+            }
+            Error::ClapError(clap_err) =>  {
+                write!(f, "Command-line argument parsing error: {:?}", clap_err)
             }
             Error::FileSystemError(io_err) => {
                 write!(f, "Could not load or save the save file: {:?}", io_err)
@@ -51,5 +56,11 @@ impl From<ron::error::Error> for Error {
 impl From<std::io::Error> for Error {
     fn from(err: std::io::Error) -> Self {
         Self::IoError(err)
+    }
+}
+
+impl From<clap::Error> for Error {
+    fn from(err: clap::Error) -> Self {
+        Self::ClapError(err)
     }
 }

@@ -4,6 +4,7 @@ use clap::{self, Arg};
 
 use crate::command::Command;
 use crate::errors;
+use crate::parser;
 
 pub fn get_matches() -> clap::ArgMatches<'static> {
     clap::App::new("dodo")
@@ -37,17 +38,47 @@ pub fn get_matches() -> clap::ArgMatches<'static> {
             .long("task")
             .short("t")
             .takes_value(true)
-            .use_delimiter(false)
+            .multiple(true)
             .value_name("G")
             .help("Marks a task as done. Ex.: `dodo -d 3.2` marks the third task of the second group as done."),
         )
         .get_matches()
 }
 
-impl TryFrom<clap::ArgMatches<'static>> for Command {
+pub struct CommandLineArguments {
+    pub should_start_repl: bool,
+    pub commands: Vec<Command>
+}
+
+impl TryFrom<clap::ArgMatches<'static>> for CommandLineArguments {
     type Error = errors::Error;
 
     fn try_from(matches: clap::ArgMatches<'static>) -> Result<Self, Self::Error> {
-        todo!()
+        let mut commands: Vec<Command> = vec![];
+        
+        let parse_options = |matches: &clap::ArgMatches<'static>, commands: & mut Vec<Command>, word | {
+            if matches.is_present(word) {
+                let mut values: Vec<&str> = vec![word];
+                let mut args: Vec<&str> = matches.values_of(word).unwrap().collect();
+                values.append(&mut args);
+                // TODO: stop execution when a NoOp is found?
+                commands.push(parser::parse(&values.join(" ")));
+            }
+        };
+
+        let should_start_repl = matches.is_present("edit");
+
+        let options = ["task", "group", "done"];
+
+        for option in &options {
+            parse_options(&matches, &mut commands, option);
+        }
+
+        Ok(
+            Self {
+                commands,
+                should_start_repl
+            }
+        )
     }
 }
