@@ -1,10 +1,4 @@
-use std::{
-    convert::TryFrom,
-    fmt,
-    fs::{self, File},
-    io::{BufWriter, Write},
-    path::PathBuf,
-};
+use std::{convert::TryFrom, fmt, fs::{self, File}, io::{BufWriter, Write}, path::PathBuf};
 
 use ron;
 use colored::Colorize;
@@ -38,8 +32,26 @@ impl TryFrom<PathBuf> for TodoList {
 
     fn try_from(config_path: PathBuf) -> Result<Self, Self::Error> {
         let save_file_path = config_path.join("dodo.ron");
-        let save_file = fs::read_to_string(save_file_path)?;
-        let task_groups: Vec<TaskGroup> = ron::de::from_str(&save_file)?;
+        // let save_file = ?;
+        // let task_groups: Vec<TaskGroup> = ;
+
+        // let task_groups:  = match  {
+        //     Ok(file_contents) => ron::de::from_str(&file_contents)?,
+        //     Err(err) => {
+                
+        //     }
+        // };
+
+        let task_groups: Vec<TaskGroup> = match save_file_path.exists() {
+            true => {
+                let file_contents = fs::read_to_string(save_file_path)?;
+                ron::de::from_str(&file_contents)?
+            },
+            false => {
+                println!("{}: could not find a `dodo.ron` in `{:#?}`. \nCreating a new save file.", "warning".yellow(), save_file_path);
+                vec![]
+            }
+        };
 
         Ok(Self {
             task_groups,
