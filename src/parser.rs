@@ -147,6 +147,51 @@ fn parse_removal(words: &Vec<&str>) -> Command {
     }
 }
 
+// fn parse_addition(words: &Vec<&str>) -> Command {
+//     // Examples:
+//     //     add task 3.2
+//     //     add group 2
+//     if words.len() != 3 {
+//         println!(
+//             "{}: wrong arguments to `{}`",
+//             "error".red(),
+//             "add".green()
+//         );
+//     }
+
+//     // TODO: add usage help
+//     let print_usage = || {};
+
+//     let get_group_to_add = |word: &str| match word.parse::<u16>() {
+//         Ok(num) => Some(num),
+//         Err(_) => {
+//             print_usage();
+//             None
+//         }
+//     };
+
+//     match words[1] {
+//         "group" => match get_group_to_add(words[2]) {
+//             Some(group_no) => Command::AddGroup(group_no),
+//             None => Command::NoOp,
+//         },
+//         "task" => match get_tuple(words[2], print_usage) {
+//             Some((task_no, group_no)) => Command::AddTask(task_no, group_no),
+//             None => Command::NoOp,
+//         },
+//         other => {
+//             println!(
+//                 "{}: expected {} or {}, found {}",
+//                 "error".red(),
+//                 "task".green(),
+//                 "group".green(),
+//                 other.red()
+//             );
+//             Command::NoOp
+//         }
+//     }
+// }
+
 pub fn parse(line: &str) -> Command {
     let words: Vec<&str> = line.split(' ').filter(|x| !x.is_empty()).collect();
     if words.is_empty() {
@@ -159,6 +204,7 @@ pub fn parse(line: &str) -> Command {
         word if word.starts_with("remove") => parse_removal(&words),
         word if word.starts_with("group") => parse_group_addition(&words),
         word if word.starts_with("done") => parse_task_flip(&words),
+        // word if word.starts_with("add") => parse_addition(&words),
         // TODO: add subcommands to `show`
         word if word.starts_with("show") => Command::ShowList,
         word => {

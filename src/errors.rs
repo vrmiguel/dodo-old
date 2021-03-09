@@ -1,6 +1,7 @@
 use std::{fmt, io, path::PathBuf};
 
 use ron;
+#[allow(dead_code)]
 #[derive(Debug)]
 pub enum Error {
     NoValidHomeDirFound,

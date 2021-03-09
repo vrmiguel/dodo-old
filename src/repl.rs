@@ -1,7 +1,7 @@
 use colored::Colorize;
 
 use crate::{
-    editor::{self, Editor},
+    editor::Editor,
     errors, parser,
     todolist::TodoList,
 };

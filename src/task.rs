@@ -1,4 +1,4 @@
-use std::{fmt, io::BufWriter};
+use std::fmt;
 
 use serde::{Deserialize, Serialize};
 

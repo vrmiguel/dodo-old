@@ -1,4 +1,9 @@
+use std::convert::TryFrom;
+
 use clap::{self, Arg};
+
+use crate::command::Command;
+use crate::errors;
 
 pub fn get_matches() -> clap::ArgMatches<'static> {
     clap::App::new("dodo")
@@ -13,7 +18,7 @@ pub fn get_matches() -> clap::ArgMatches<'static> {
                 .required(false)
                 .long("edit")
                 .short("e")
-                .alias("repl")
+                // .alias("repl")
                 .takes_value(false)
                 .help("Starts a REPL for interactive editing of the list "),
         )
@@ -26,5 +31,23 @@ pub fn get_matches() -> clap::ArgMatches<'static> {
             .value_name("T.G")
             .help("Marks a task as done. Ex.: `dodo -d 3.2` marks the third task of the second group as done."),
         )
+        .arg(
+            Arg::with_name("task")
+            .required(false)
+            .long("task")
+            .short("t")
+            .takes_value(true)
+            .use_delimiter(false)
+            .value_name("G")
+            .help("Marks a task as done. Ex.: `dodo -d 3.2` marks the third task of the second group as done."),
+        )
         .get_matches()
+}
+
+impl TryFrom<clap::ArgMatches<'static>> for Command {
+    type Error = errors::Error;
+
+    fn try_from(matches: clap::ArgMatches<'static>) -> Result<Self, Self::Error> {
+        todo!()
+    }
 }
